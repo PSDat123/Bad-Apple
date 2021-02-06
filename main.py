@@ -8,7 +8,8 @@ import curses
 import time
 from ctypes import POINTER, WinDLL, Structure, sizeof, byref
 from ctypes.wintypes import BOOL, SHORT, WCHAR, UINT, ULONG, DWORD, HANDLE
-
+from playsound import playsound
+from threading import Thread
 
 LF_FACESIZE = 32
 STD_OUTPUT_HANDLE = -11
@@ -78,8 +79,8 @@ fps = 30
 ms = 1 / fps
 status = 0
 
-if not os.path.isdir("./out"):
-    os.makedirs("./out")
+if not os.path.isdir("./src"):
+    os.makedirs("./src")
 while cap.isOpened() and status:
     ret, buf = cap.read()
     if not ret:
@@ -88,7 +89,7 @@ while cap.isOpened() and status:
     k = cv2.waitKey(5)
     fc += 1
     os.system('cls')
-    temp = open('./out/RES(' + str(fc) + ').txt', 'w')
+    temp = open('./src/RES(' + str(fc) + ').txt', 'w')
     # buf = cv2.resize(buf, (0, 0), fx=frameWidth, fy=frameHeight)
 
     for i in range(int(frameHeight / 2)):
@@ -117,10 +118,17 @@ stdscr.keypad(True)
 t0 = time.time()
 i = 1
 
+
+def play_music():
+    playsound('Bad Apple.mp3')
+
+
+music_thread = Thread(target=play_music)
+music_thread.start()
 while True:
     t1 = time.time()
     i = int((t1 - t0) * fps) + 1
-    filename = './out/RES('+str(i)+').txt'
+    filename = './src/RES('+str(i)+').txt'
     try:
         with open(filename, 'r') as f:
             data = f.read()
